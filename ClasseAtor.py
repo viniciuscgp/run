@@ -1,8 +1,16 @@
 from typing import Any
 
+import pygame
+
 from pygame import Rect, sprite
 
 from utilitarios import gasta_forca
+
+import os
+
+# Pastas importantes
+pasta_jogo = os.path.dirname(__file__)
+pasta_img = os.path.join(pasta_jogo, "imagens")
 
 
 class Ator(sprite.Sprite):
@@ -10,13 +18,13 @@ class Ator(sprite.Sprite):
         super(Ator, self).__init__()
         self.rect = Rect(x, y, 10, 10)
 
-        self.gravidade = 0       # forca gravitacional
+        self.gravidade = 0  # forca gravitacional
         self.gravidade_acel = 0  # aceleracao gravitacional
-        self.gravidade_max = 6   # maxima da forca de gravidade
+        self.gravidade_max = 6  # maxima da forca de gravidade
 
-        self.atrito = 0          # forca posta as forcas horizontais e verticais
-        self.h_forca = 0         # forca horizontal
-        self.v_forca = 0         # forca vertical
+        self.atrito = 0  # forca posta as forcas horizontais e verticais
+        self.h_forca = 0  # forca horizontal
+        self.v_forca = 0  # forca vertical
         pass
 
     def update(self, *args: Any, **kwargs: Any) -> None:
@@ -31,7 +39,8 @@ class Ator(sprite.Sprite):
 
         super().update(*args, **kwargs)
 
-    def define_imagem(self, surf):
-        self.image = surf
+    def carrega_imagem(self, arquivo):
+        self.image = pygame.image.load(os.path.join(pasta_img, arquivo))
+        # self.image.set_colorkey((1, 1, 1))
         self.rect.width = self.image.get_width()
         self.rect.height = self.image.get_height()
