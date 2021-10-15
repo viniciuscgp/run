@@ -1,4 +1,4 @@
-# run
+# Run Zé run!
 Jogo para aprender Python
 
 # Plot
@@ -10,16 +10,12 @@ Zé amanheceu achando que aliens invadiram a terra. Zé ficou doidão e ta atira
 
 python run.py
 
-# Controles
+- Controles
 
-## Z  
-### para Pular
+- Z para Pular
 
-## X  
+- X para Atirar
 
-### para Atirar
-
-## ESC 
-### pára fugir para a tranquilidade do shell
+- ESC pára fugir para a tranquilidade do shell
 
 Prentendo gerar um executável assim que terminar o jogo. Abraço.
