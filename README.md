@@ -1,10 +1,10 @@
 # Run Zé,  run !!!!
 Jogo para aprender Python
 
-# Plot
+## Plot
 Zé amanheceu achando que aliens invadiram a terra. Zé ficou doidão e ta atirando em tudo que vê. Cuidado com o Zé!
 
-# Para executar
+## Para executar
 -Você deve ter o Python instalado.
 -Você deve ter a lib pygame instalada.
 
