@@ -1,5 +1,5 @@
 # Run Zé,  run !!!!
-Jogo para aprender Python
+Jogo para aprender Python (em construção)
 
 ## Plot
 Zé amanheceu achando que aliens invadiram a terra. Zé ficou doidão e ta atirando em tudo que vê. Cuidado com o Zé!
