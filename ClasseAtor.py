@@ -9,8 +9,8 @@ from utilitarios import gasta_forca
 import os
 
 # Pastas importantes
-pasta_jogo = os.path.dirname(__file__)
-pasta_img = os.path.join(pasta_jogo, "imagens")
+PASTA_JOGO = os.path.dirname(__file__)
+PASTA_IMG = os.path.join(PASTA_JOGO, "imagens")
 
 
 class Ator(sprite.Sprite):
@@ -40,7 +40,7 @@ class Ator(sprite.Sprite):
         super().update(*args, **kwargs)
 
     def carrega_imagem(self, arquivo):
-        self.image = pygame.image.load(os.path.join(pasta_img, arquivo))
+        self.image = pygame.image.load(os.path.join(PASTA_IMG, arquivo))
         # self.image.set_colorkey((1, 1, 1))
         self.rect.width = self.image.get_width()
         self.rect.height = self.image.get_height()

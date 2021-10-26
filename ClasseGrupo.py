@@ -5,7 +5,7 @@ from pygame import Surface
 from pygame.sprite import Sprite
 
 
-class Palco(pygame.sprite.Group):
+class Grupo(pygame.sprite.Group):
     def __init__(self, *sprites: Union[Sprite, Sequence[Sprite]]):
         super().__init__(*sprites)
 

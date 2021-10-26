@@ -5,10 +5,10 @@ import pygame
 
 from ClasseAtor import Ator
 from ClasseJogador import Jogador
-from ClassePalco import Palco
+from ClasseGrupo import Grupo
 
-# Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
-RATIO = 1.777777778
+
+RATIO = 1.777777778 # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
 HEIGHT = 600
 WIDTH = HEIGHT * RATIO
 FPS = 60
@@ -26,28 +26,31 @@ pygame.font.init()
 # Prepara
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 clock = pygame.time.Clock()
-palco = Palco()
+grupo = Grupo()
 
 pygame.display.set_caption("Gunman - Dia de Fúria")
 
-# Adiciona o Jogador no Palco
+#--------------------JOGADOR----------------------
 jogador = Jogador(100, 100)
 jogador.carrega_imagem("jogador00.png")
 jogador.atrito = 0.1
 jogador.gravidade = 1
 jogador.gravidade_acel = 0.1
 
-palco.adicionaAtor(jogador)
+grupo.adicionaAtor(jogador)
 
-# Inimigo exemplo
+#-------------------INIMIGO-----------------------
 inimigo = Ator(random() * WIDTH, random() * HEIGHT)
 inimigo.carrega_imagem("jogador00.png")
-palco.adicionaAtor(inimigo)
+grupo.adicionaAtor(inimigo)
 
+#-------------------
+cidade = Ator(0, 0)
+cidade.carrega_imagem("city_alucard.svg")
+grupo.adicionaAtor(cidade)
 running = True
 
 while running:
-    clock.tick(FPS)
 
     for event in pygame.event.get():
 
@@ -60,9 +63,11 @@ while running:
 
     screen.fill(FUNDO)
 
-    palco.atualizaTudo()
-    palco.desenhaTudo(screen)
+    grupo.atualizaTudo()
+    grupo.desenhaTudo(screen)
 
     pygame.display.flip()
+
+    clock.tick(FPS)
 
 pygame.quit()
