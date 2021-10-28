@@ -3,12 +3,10 @@ from random import random
 
 import pygame
 
-from ClasseAtor import Ator
-from ClasseJogador import Jogador
-from ClasseGrupo import Grupo
+from ClassActor import Actor
+from ClassPlayer import Player
 
-
-RATIO = 1.777777778 # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
+RATIO = 1.777777778  # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
 HEIGHT = 600
 WIDTH = HEIGHT * RATIO
 FPS = 60
@@ -26,48 +24,81 @@ pygame.font.init()
 # Prepara
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 clock = pygame.time.Clock()
-grupo = Grupo()
+stage = pygame.sprite.Group()
 
-pygame.display.set_caption("Gunman - Dia de Fúria")
+pygame.display.set_caption("Corre Zé, corre!")
 
-#--------------------JOGADOR----------------------
-jogador = Jogador(100, 100)
-jogador.carrega_imagem("jogador00.png")
-jogador.atrito = 0.1
-jogador.gravidade = 1
-jogador.gravidade_acel = 0.1
+# --------------------JOGADOR----------------------
+player = Player(stage, 100, 100)
+player.load_imagem("jogador00.png")
+player.fric = 0.1
+player.grav = 1
+player.grav_acel = 0.1
 
-grupo.adicionaAtor(jogador)
+# -------------------INIMIGO-----------------------
+enemy = Actor(stage, random() * WIDTH, random() * HEIGHT)
+enemy.load_imagem("jogador00.png")
 
-#-------------------INIMIGO-----------------------
-inimigo = Ator(random() * WIDTH, random() * HEIGHT)
-inimigo.carrega_imagem("jogador00.png")
-grupo.adicionaAtor(inimigo)
+# -------------------
 
-#-------------------
-cidade = Ator(0, 0)
-cidade.carrega_imagem("city_alucard.svg")
-grupo.adicionaAtor(cidade)
-running = True
+# -------------------
+font1 = pygame.font.Font("./fontes/Changa-VariableFont_wght.ttf", 50)
+title_text = font1.render("Corre Zé, corre!", True, "White")
+title_rect = title_text.get_rect(centerx=WIDTH / 2, centery=HEIGHT / 2)
 
-while running:
 
-    for event in pygame.event.get():
+def state_title():
+    running = True
+    while running:
+        for event in pygame.event.get():
 
-        if event.type == pygame.QUIT:
-            running = False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.type == pygame.QUIT:
                 running = False
 
-    screen.fill(FUNDO)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    state_playing()
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
 
-    grupo.atualizaTudo()
-    grupo.desenhaTudo(screen)
+        screen.fill((156, 150, 20))
 
-    pygame.display.flip()
+        screen.blit(title_text, title_rect.midtop)
 
-    clock.tick(FPS)
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def state_gameover():
+    pass
+
+
+def state_playing():
+    running = True
+    while running:
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUITstate_playing():
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+        screen.fill(FUNDO)
+
+        stage.update()
+        stage.draw(screen)
+
+        screen.blit(fonte_surface, (30, 30))
+
+        pygame.display.flip()
+
+        clock.tick(FPS)
+
+
+state_title()
 
 pygame.quit()

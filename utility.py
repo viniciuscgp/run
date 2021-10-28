@@ -7,15 +7,15 @@ def signal(valor):
         return 1
 
 
-def gasta_forca(valor, atrito):
-    if atrito == 0:
+def consume(valor, fric):
+    if fric == 0:
         return valor
 
     sinal = signal(valor)
     valor = abs(valor)
 
     if abs(valor) > 0:
-        valor -= atrito
+        valor -= fric
         if valor < 0:
             valor = 0
     return valor * sinal
