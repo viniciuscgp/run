@@ -80,7 +80,7 @@ def state_playing():
 
         for event in pygame.event.get():
 
-            if event.type == pygame.QUITstate_playing():
+            if event.type == pygame.QUIT:
                 running = False
 
             if event.type == pygame.KEYDOWN:
@@ -92,7 +92,7 @@ def state_playing():
         stage.update()
         stage.draw(screen)
 
-        screen.blit(fonte_surface, (30, 30))
+        screen.blit(title_text, (30, 30))
 
         pygame.display.flip()
 
