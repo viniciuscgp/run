@@ -3,13 +3,12 @@ from random import random
 
 import pygame
 
-from ClassActor import Actor
-from ClassGame import Game
-from ClassPlayer import Player
-from ClassText import Text
+from xretro.ClassActor import Actor
+from xretro.ClassGame import Game
+from xretro.ClassPlayer import Player
+from xretro.ClassText import Text
 from pygame.time import Clock
 from pygame.sprite import Group
-from pygame import Rect
 
 RATIO = 1.777777778  # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
 HEIGHT = 600
@@ -36,58 +35,62 @@ stage = Group()
 
 pygame.display.set_caption(game.title)
 
-# --------------------JOGADOR----------------------
-player = Player(stage, 100, 100)
-player.load_imagem("jogador00.png")
-player.fric = 0.1
-player.grav = 1
-player.grav_acel = 0.1
+# -------------------TEXTOS-----------------------
+title = Text("Changa-VariableFont_wght.ttf", game.title, 60, "Yellow").set_bold(True).set_italic(True)
+push_space = Text("Changa-VariableFont_wght.ttf", "Push space key", 30, "White").set_bold(True).set_italic(True)
 
-# -------------------INIMIGO-----------------------
-enemy = Actor(stage, random() * WIDTH, random() * HEIGHT)
-enemy.load_imagem("jogador00.png")
-
-# -------------------TEXTOS------------------------
-title = Text("Changa-VariableFont_wght.ttf", game.title, 60, "Yellow").set_bold(False)
-title2 = Text("Changa-VariableFont_wght.ttf", game.title, 60, "Yellow").set_bold(True)
+pygame.time.set_timer(pygame.USEREVENT, 300)
 
 
 def state_title():
     running = True
-    seconds = 15
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_SPACE:
                     state_playing()
 
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     exit()
 
+            if event.type == pygame.USEREVENT:
+                push_space.togle_visible()
+                pygame.time.set_timer(pygame.USEREVENT, 300)
+
         screen.fill(FUNDO)
-        title.draw_c(screen)
-        title2.draw_xc(screen, 10)
+
+        title.draw_xc(screen, game.h // 2 - 200)
+        push_space.draw_xc(screen, game.h // 2 + 30)
 
         pygame.display.flip()
         clock.tick(FPS)
 
 
-def state_gameover():
-    pass
-
-
 def state_playing():
     running = True
+    # -------------------JOGADOR----------------------
+    player = Player(stage, 100, 100)
+    player.load_imagem("jogador00.png")
+    player.fric = 0.1
+    player.grav = 1
+    player.grav_acel = 0.1
+
+    # -------------------INIMIGO----------------------
+    enemy = Actor(stage, random() * WIDTH, random() * HEIGHT)
+    enemy.load_imagem("jogador00.png")
+
     while running:
 
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                exit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -103,6 +106,10 @@ def state_playing():
         clock.tick(FPS)
 
 
-state_title()
+def state_gameover():
+    pass
 
+
+state_title()
 pygame.quit()
+exit()

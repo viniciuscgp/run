@@ -1,15 +1,16 @@
 from typing import Any
 import pygame
-from pygame import Rect, sprite
+from pygame import Rect
+from pygame.sprite import Sprite
+from pygame.sprite import Group
 
 import consts
 from utility import consume
 import os
-import utility
 
 
-class Actor(sprite.Sprite):
-    def __init__(self, group, x, y):
+class Actor(Sprite):
+    def __init__(self, group: Group, x: int, y: int):
         super().__init__(group)
         self.grp = group
         self.rect = Rect(x, y, 0, 0)
@@ -36,15 +37,18 @@ class Actor(sprite.Sprite):
 
     def set_x(self, x):
         self.rect.x = x
+        return self
 
     def set_y(self, y):
         self.rect.y = y
+        return self
 
     def set_pos(self, x, y):
         self.set_x(x)
         self.set_y(y)
+        return self
 
     def load_imagem(self, arquivo):
-        self.image = pygame.image.load(os.path.join(consts.ROOT_FOLDER, "images", arquivo))
+        self.image = pygame.image.load(os.path.join(consts.ROOT_FOLDER, "../images", arquivo))
         self.rect.width = self.image.get_width()
         self.rect.height = self.image.get_height()
