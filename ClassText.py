@@ -6,6 +6,7 @@ from pygame import Rect
 from pygame import Surface
 from pygame import Color
 
+
 class Text:
     def __init__(self, fontname: str, text: str, size: int, color: Color) -> None:
         self.file = os.path.join(consts.ROOT_FOLDER, "fonts", fontname)
@@ -54,8 +55,6 @@ class Text:
         return self
 
     def set_italic(self, v: bool):
-        self.font.set_bold(v)
+        self.font.set_italic(v)
         self.txt_surf = self.font.render(self.text, True, self.color)
         return self
-
-
