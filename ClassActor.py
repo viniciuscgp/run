@@ -45,6 +45,6 @@ class Actor(sprite.Sprite):
         self.set_y(y)
 
     def load_imagem(self, arquivo):
-        self.image = pygame.image.load(os.path.join(consts.PASTA_IMG, arquivo))
+        self.image = pygame.image.load(os.path.join(consts.ROOT_FOLDER, "images", arquivo))
         self.rect.width = self.image.get_width()
         self.rect.height = self.image.get_height()

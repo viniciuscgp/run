@@ -1,4 +1,4 @@
-# Run Zé,  run !!!!
+# Corre !!!!
 Jogo para aprender Python (em construção)
 
 ## Plot
