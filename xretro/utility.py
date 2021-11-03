@@ -1,3 +1,25 @@
+# Pastas importantes
+import os
+
+
+def get_root():
+    filepath = os.path.dirname(__file__)
+    return os.path.join(filepath, "..")
+
+
+def images_folder():
+    return os.path.join(get_root(), "images")
+
+
+def sounds_folder():
+    return os.path.join(get_root(), "sounds")
+
+
+def fonts_folder():
+    print(get_root())
+    return os.path.join(get_root(), "fonts")
+
+
 def signal(valor):
     if valor < 0:
         return -1
