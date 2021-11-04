@@ -7,11 +7,11 @@ import pygame
 from pygame.time import Clock
 from pygame.sprite import Group
 from pygame import Color
-from xretro.ClassGame import Game
-from xretro.ClassText import Text
-from xretro.ClassImageWorks import ImageSet
-from xretro.ClassImageWorks import AnimSet
-from ClassPlayer import Player
+from xretro.retrogame import Game
+from xretro.retrotext import Text
+from xretro.retroimages import ImageSet
+from xretro.retroimages import AnimSet
+from player import Player
 from pygame import Surface
 import os
 import ftplib
@@ -61,8 +61,13 @@ score = 0
 def state_title():
     running = True
 
-    images = ImageSet()
-    images.add("patcheshugh_backgrnd-2.png")
+    background = ImageSet()
+    background.add("patcheshugh_backgrnd-3.png")
+    background.zoom(1.8)
+
+    ze = ImageSet()
+    ze.add(os.path.join("Soldier-Guy", "_Mode-Gun", "03-Shot", "E_E_Gun__Attack_000.png"))
+    ze.zoom(0.3)
 
     while running:
         for event in pygame.event.get():
@@ -82,7 +87,8 @@ def state_title():
                 txt_push.togle_visible()
                 pygame.time.set_timer(pygame.USEREVENT, 300)
 
-        buffer.blit(images.get(0).get_image(), pygame.Rect(0, 0, 0, 0))
+        buffer.blit(background.get(0).get_image(), pygame.Rect(0, 0, 0, 0))
+        buffer.blit(ze.get(0).get_image(), pygame.Rect(450, 195, 0, 0))
 
         txt_title.draw_xc(buffer, game.h // 2 - 195)
         txt_title2.draw_xc(buffer, game.h // 2 - 200)
@@ -135,7 +141,7 @@ def state_playing():
 
     # ----------------- BACKGROUNDS ------------------
     bk = ImageSet()
-    bk.add("patcheshugh_backgrnd-2.png")
+    bk.add("patcheshugh_backgrnd-3.png")
     rb1 = bk.get(0).get_image().get_rect()
     rb2 = bk.get(0).get_image().get_rect()
     rb1.left = 0

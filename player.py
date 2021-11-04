@@ -2,7 +2,7 @@ from typing import Any
 
 import pygame
 
-from xretro.ClassActor import Actor
+from xretro.retroactor import Actor
 
 
 class Player(Actor):

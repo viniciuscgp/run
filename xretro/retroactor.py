@@ -6,8 +6,8 @@ from pygame.sprite import Group
 
 from xretro import utility
 from xretro.utility import consume
-from xretro.ClassImageWorks import AnimSet
-from xretro.ClassImageWorks import ImageSet
+from xretro.retroimages import AnimSet
+from xretro.retroimages import ImageSet
 
 import os
 
