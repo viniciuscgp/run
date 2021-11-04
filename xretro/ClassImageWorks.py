@@ -9,6 +9,8 @@ class ImageSingle(object):
         self.img: Surface = img
         self.img_copy: Surface = img.copy()
         self.aspect = self.img.get_height() / self.img.get_width()
+        self.hflip = False
+        self.vflip = False
 
     def get_image(self):
         return self.img
@@ -28,8 +30,14 @@ class ImageSingle(object):
         self.img_copy = self.img.copy()
 
     def flip(self, hflip, vflip):
-        self.img = self.img_copy.copy()
-        self.img = pygame.transform.flip(self.img, hflip, vflip)
+        if self.hflip != hflip or self.vflip != vflip:
+            self.img = self.img_copy.copy()
+            self.img = pygame.transform.flip(self.img, hflip, vflip)
+            self.hflip = hflip
+            self.vflip = vflip
+
+    def copy_from(self, surf: Surface):
+        self.img = surf.copy()
 
 
 class ImageSet(object):
@@ -49,6 +57,9 @@ class ImageSet(object):
 
     def count(self):
         return len(self.images)
+
+    def copy_from(self, index: int, surf: Surface):
+        self.images[index].copy_from(surf)
 
     def zoom(self, z: float):
         for img in self.images:
@@ -74,4 +85,3 @@ class AnimSet(object):
 
     def count(self):
         return len(self.sets)
-

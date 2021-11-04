@@ -12,11 +12,13 @@ from xretro.ClassText import Text
 from xretro.ClassImageWorks import ImageSet
 from xretro.ClassImageWorks import AnimSet
 from ClassPlayer import Player
+from pygame import Surface
 import os
+import ftplib
 
 RATIO = 1.777777778  # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
 HEIGHT = 600
-WIDTH = HEIGHT * RATIO
+WIDTH = math.floor(HEIGHT * RATIO)
 FPS = 60
 
 # Inicializa a pygame
@@ -33,11 +35,26 @@ clock = Clock()
 
 pygame.display.set_caption(game.title)
 
-# -------------------TEXTOS-----------------------
-txt_title = Text("Changa-VariableFont_wght.ttf", game.title, 60, Color("Yellow")).set_bold(True).set_italic(True)
+# -------------- TITLE TEXTS-----------------
+txt_title = Text("Changa-VariableFont_wght.ttf", game.title, 60, Color(134, 240, 0)).set_bold(True).set_italic(True)
+txt_title2 = Text("Changa-VariableFont_wght.ttf", game.title, 60, Color(67, 109, 27)).set_bold(True).set_italic(True)
 txt_push = Text("Changa-VariableFont_wght.ttf", "Push space key", 30, Color("White")).set_bold(True).set_italic(True)
 
+# -------------- HUD TEXTS -------------------
+txt_lives = Text("Changa-VariableFont_wght.ttf", "LIVES:", 30, Color("White")).set_bold(True)
+txt_ammo = Text("Changa-VariableFont_wght.ttf", "AMMO:", 30, Color("White")).set_bold(True)
+txt_score = Text("Changa-VariableFont_wght.ttf", "SCORE:", 30, Color("White")).set_bold(True)
+
+txt_ammov = Text("Changa-VariableFont_wght.ttf", "000", 30, Color("#EDD400")).set_bold(True)
+txt_scorev = Text("Changa-VariableFont_wght.ttf", "00000", 30, Color("#EDD400")).set_bold(True)
+
 pygame.time.set_timer(pygame.USEREVENT, 300)
+
+buffer = Surface((WIDTH, HEIGHT))
+
+lives = 3
+ammo = 50
+score = 0
 
 
 # TITLE STATE ----------------------------------------------------------------------------------
@@ -65,21 +82,27 @@ def state_title():
                 txt_push.togle_visible()
                 pygame.time.set_timer(pygame.USEREVENT, 300)
 
-        screen.blit(images.get(0).get_image(), pygame.Rect(0, 0, 0, 0))
+        buffer.blit(images.get(0).get_image(), pygame.Rect(0, 0, 0, 0))
 
-        txt_title.draw_xc(screen, game.h // 2 - 200)
-        txt_push.draw_xc(screen, game.h // 2 + 30)
+        txt_title.draw_xc(buffer, game.h // 2 - 195)
+        txt_title2.draw_xc(buffer, game.h // 2 - 200)
 
+        txt_push.draw_xc(buffer, game.h // 2 + 30)
+
+        screen.blit(buffer, (0, 0))
         pygame.display.flip()
         clock.tick(FPS)
 
 
 # GAME STATE----------------------------------------------------------------------------------
 def state_playing():
+    global score
+
     stage = Group()
     running = True
 
-    # -------------------JOGADOR----------------------
+
+    # -------------------PLAYER ANIMATIONS----------------------
     player_idle = ImageSet()
     for i in range(0, 9):
         player_idle.add(os.path.join("Soldier-Guy", "_Mode-Gun", "01-Idle", "E_E_Gun__Idle_{0:03n}.png".format(i)))
@@ -106,16 +129,17 @@ def state_playing():
     player.grav_vel = 2.8
     player.grav_acel = 0.45
     player.ymax = 450
-    player.xmin = 180
-    player.xmax = WIDTH - 180
+    player.xmin = 200
+    player.xmax = WIDTH - 200
     player.image_speed = 0.15
 
     # ----------------- BACKGROUNDS ------------------
     bk = ImageSet()
     bk.add("patcheshugh_backgrnd-2.png")
-    imw = bk.get(0).get_image().get_width()
-    xb1 = 0
-    xb2 = imw + 1
+    rb1 = bk.get(0).get_image().get_rect()
+    rb2 = bk.get(0).get_image().get_rect()
+    rb1.left = 0
+    rb2.left = rb1.right
 
     while running:
         for event in pygame.event.get():
@@ -132,31 +156,54 @@ def state_playing():
                 if event.key == pygame.K_s:
                     player.image_index += 1
 
-        screen.blit(bk.get(0).get_image(), pygame.Rect(xb1, 0, 0, 0))
-        screen.blit(bk.get(0).get_image(), pygame.Rect(xb2, 0, 0, 0))
+        buffer.blit(bk.get(0).get_image(), rb1)
+        buffer.blit(bk.get(0).get_image(), rb2)
 
-        xb1 -= player.h_vel
-        xb2 -= player.h_vel
+        rb1.left += player.h_vel * -1
+        rb2.left += player.h_vel * -1
 
-        if xb1 > 0:
-            xb1 = 0
-            xb2 = xb1 + imw + 1
+        if rb1.left > 0:
+            rb1.left = 0
+            rb2.left = rb1.right
 
-        if xb2 + imw <= WIDTH:
-            xb1 = 0
-            xb2 = imw + 1
+        if rb2.right <= WIDTH:
+            rb1.left = rb2.left
+            rb2.left = rb1.right
+        score += 1
 
         stage.update()
-        stage.draw(screen)
+        stage.draw(buffer)
 
+        draw_hud(buffer)
+
+        screen.blit(buffer, (0, 0))
         pygame.display.flip()
 
         clock.tick(FPS)
 
 
+def draw_hud(surface: Surface):
+    global score
+    global lives
+
+    base = 50
+    txt_lives.draw_xy(surface, base + 100, HEIGHT - 70)
+
+    txt_ammo.draw_xy(surface, base + 400, HEIGHT - 70)
+    txt_ammov.draw_xy(surface, base + 520, HEIGHT - 70)
+
+    txt_score.draw_xy(surface, base + 680, HEIGHT - 70)
+    txt_scorev.set_text(str.format("{0:05n}", score))
+    txt_scorev.draw_xy(surface, base + 800, HEIGHT - 70)
+
+    pass
+
+
 # GAME OVER STATE----------------------------------------------------------------------------------
 def state_gameover():
     pass
+
+
 
 
 state_title()

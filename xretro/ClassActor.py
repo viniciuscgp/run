@@ -43,6 +43,8 @@ class Actor(Sprite):
         self.xmin = Actor.DEFAULT
 
     def update(self, *args: Any, **kwargs: Any) -> None:
+        super().update(*args, **kwargs)
+
         self.rect.move_ip(self.h_vel, self.v_vel)
         self.rect.move_ip(0, self.grav_vel)
 
@@ -80,6 +82,7 @@ class Actor(Sprite):
         if self.ymin != Actor.DEFAULT:
             if self.rect.y < self.ymin:
                 self.rect.y = self.ymin
+                self.grav_vel = 0
                 self.v_vel = 0
 
         if self.xmax != Actor.DEFAULT:
@@ -91,8 +94,6 @@ class Actor(Sprite):
             if self.rect.x < self.xmin:
                 self.rect.x = self.xmin
                 self.h_vel = 0
-
-        super().update(*args, **kwargs)
 
     def set_x(self, x):
         self.rect.x = x
