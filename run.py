@@ -54,6 +54,33 @@ txt_score = Text("Changa-VariableFont_wght.ttf", "SCORE:", 30, Color("White")).s
 txt_ammov = Text("Changa-VariableFont_wght.ttf", "000", 30, Color("#EDD400")).set_bold(True)
 txt_scorev = Text("Changa-VariableFont_wght.ttf", "00000", 30, Color("#EDD400")).set_bold(True)
 
+# --------------- HUD LIVES -------------------
+heart_set = ImageSet()
+heart_set.add(os.path.join("TokyioGeisha_Pixel Hearts", "PNGs", "0.bmp"))
+heart_img = heart_set.get(0).get_image()
+heart_img.set_colorkey(Color("white"))
+
+# -------------------PLAYER ANIMATIONS----------------------
+player_idle = ImageSet()
+for i in range(0, 10):
+    player_idle.add(os.path.join("Soldier-Guy", "_Mode-Gun", "01-Idle", "E_E_Gun__Idle_{0:03n}.png".format(i)))
+player_idle.zoom(0.3)
+
+player_run = ImageSet()
+for i in range(0, 10):
+    player_run.add(os.path.join("Soldier-Guy", "_Mode-Gun", "02-Run", "E_E_Gun__Run_000_{0:03n}.png".format(i)))
+player_run.zoom(0.3)
+
+player_jump = ImageSet()
+for i in range(0, 1):
+    player_jump.add(os.path.join("Soldier-Guy", "_Mode-Gun", "05-Jump", "E_E_Gun__Jump_{0:03n}.png".format(i)))
+player_jump.zoom(0.3)
+
+player_shot = ImageSet()
+for i in range(0, 10):
+    player_shot.add(os.path.join("Soldier-Guy", "_Mode-Gun", "03-Shot", "E_E_Gun__Attack_{0:03n}.png".format(i)))
+player_shot.zoom(0.3)
+
 buffer = Surface((WIDTH, HEIGHT))
 
 lives = 3
@@ -137,28 +164,13 @@ def state_playing():
     running = True
 
     music = SoundBox("public_domain_upbeatoverworld.wav").play_music()
-    # -------------------PLAYER ANIMATIONS----------------------
-    player_idle = ImageSet()
-    for i in range(0, 9):
-        player_idle.add(os.path.join("Soldier-Guy", "_Mode-Gun", "01-Idle", "E_E_Gun__Idle_{0:03n}.png".format(i)))
-    player_idle.zoom(0.3)
 
-    player_run = ImageSet()
-    for i in range(0, 9):
-        player_run.add(os.path.join("Soldier-Guy", "_Mode-Gun", "02-Run", "E_E_Gun__Run_000_{0:03n}.png".format(i)))
-    player_run.zoom(0.3)
+    player = Player(stage, game, WIDTH // 2 - 80, 100)
 
-    player_jump = ImageSet()
-    for i in range(0, 0):
-        player_jump.add(os.path.join("Soldier-Guy", "_Mode-Gun", "05-Jump", "E_E_Gun__Jump_000_{0:03n}.png".format(i)))
-    player_jump.zoom(0.3)
-
-    player = Player(stage, WIDTH / 2 - 80, 100)
-
-    player.animations = AnimSet()
     player.animations.add(player_idle)
     player.animations.add(player_run)
     player.animations.add(player_jump)
+    player.animations.add(player_shot)
 
     player.fric = 0.2
     player.grav_vel = 2.8
@@ -175,6 +187,9 @@ def state_playing():
     rb2 = bk.get(0).get_image().get_rect()
     rb1.left = 0
     rb2.left = rb1.right
+
+    EV_SCORE = pygame.USEREVENT + 10
+    pygame.time.set_timer(EV_SCORE, 300, False)
 
     while running:
         for event in pygame.event.get():
@@ -208,7 +223,6 @@ def state_playing():
         if rb2.right <= WIDTH:
             rb1.left = rb2.left
             rb2.left = rb1.right
-        score += 1
 
         stage.update()
         stage.draw(buffer)
@@ -227,6 +241,11 @@ def draw_hud(surface: Surface):
 
     base = 50
     txt_lives.draw_xy(surface, base + 100, HEIGHT - 70)
+    w = heart_img.get_width()
+    for i in range(1, lives + 1):
+        x = (base + 100 + 60) + i * (w + 4)
+        y = HEIGHT - 55
+        surface.blit(heart_img, (x, y))
 
     txt_ammo.draw_xy(surface, base + 400, HEIGHT - 70)
     txt_ammov.draw_xy(surface, base + 520, HEIGHT - 70)
@@ -234,8 +253,6 @@ def draw_hud(surface: Surface):
     txt_score.draw_xy(surface, base + 680, HEIGHT - 70)
     txt_scorev.set_text(str.format("{0:05n}", score))
     txt_scorev.draw_xy(surface, base + 800, HEIGHT - 70)
-
-    pass
 
 
 def state_gameover():

@@ -2,22 +2,25 @@ from typing import Any
 import math
 from pygame import Rect
 from pygame.sprite import Sprite
+from pygame.sprite import DirtySprite
 from pygame.sprite import Group
 
-from xretro import utility
 from xretro.utility import consume
 from xretro.retroimages import AnimSet
 from xretro.retroimages import ImageSet
+from xretro.retrogame import Game
+from pygame.surface import Surface
 
-import os
 
-
-class Actor(Sprite):
+class Actor(DirtySprite):
     DEFAULT = 99999999999999
 
-    def __init__(self, group: Group, x: int, y: int):
+    def __init__(self, group: Group, game: Game, x: int, y: int):
         super().__init__(group)
-        self.animations: AnimSet = []
+        self.game = game
+        self.visible = False
+        self.image = Surface((2, 2))
+        self.animations: AnimSet = AnimSet()
 
         self.image_index = 0
         self.image_speed = 0.0
@@ -42,6 +45,10 @@ class Actor(Sprite):
         self.xmax = Actor.DEFAULT
         self.xmin = Actor.DEFAULT
 
+        self.on_animation_end = None
+        self.on_destroy = None
+        self.on_outofscreen = None
+
     def update(self, *args: Any, **kwargs: Any) -> None:
         super().update(*args, **kwargs)
 
@@ -54,19 +61,28 @@ class Actor(Sprite):
         if self.grav_vel < self.grav_max:
             self.grav_vel += self.grav_acel
 
+        # Handles on_outofscreen Event
+        if self.on_outofscreen is not None:
+            r = Rect(0, 0, self.game.w, self.game.h)
+            if not r.contains(self.rect):
+                self.on_outofscreen(self)
+
         # Handles animations
         # -----------------------------------------------------
         if self.animations.count() > self.anim_index:
             imgs: ImageSet = self.animations.get(self.anim_index)
 
-            if imgs.count() > self.image_index:
+            if self.image_index < imgs.count():
                 self.image = imgs.get(math.floor(self.image_index)).get_image()
+                self.visible = True
                 self.rect.w = self.image.get_rect().w
                 self.rect.h = self.image.get_rect().h
 
                 if self.image_speed != 0:
                     self.image_index += self.image_speed
                     if self.image_index > imgs.count() - 1:
+                        if self.on_animation_end is not None:
+                            self.on_animation_end(self)
                         self.image_index = 0
                     if self.image_index < 0:
                         self.image_index = imgs.count() - 1
@@ -121,3 +137,8 @@ class Actor(Sprite):
         if self.animations.count() > self.anim_index:
             imgs: ImageSet = self.animations.get(self.anim_index)
             imgs.flip(hflip, vflip)
+
+    def destroy(self):
+        self.kill()
+        if self.on_destroy is not None:
+            self.on_destroy(self)
