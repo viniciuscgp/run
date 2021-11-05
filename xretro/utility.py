@@ -16,7 +16,6 @@ def sounds_folder():
 
 
 def fonts_folder():
-    print(get_root())
     return os.path.join(get_root(), "fonts")
 
 

@@ -11,15 +11,21 @@ from xretro.retrogame import Game
 from xretro.retrotext import Text
 from xretro.retroimages import ImageSet
 from xretro.retroimages import AnimSet
+from xretro.retrosounds import SoundBox
+
 from player import Player
 from pygame import Surface
 import os
-import ftplib
 
 RATIO = 1.777777778  # Exemplos que podemos usar ratios: 1.777777778 (1280x720) 1.333333333 (800x600) 1.6 (320x200)
 HEIGHT = 600
 WIDTH = math.floor(HEIGHT * RATIO)
 FPS = 60
+
+ST_TITLE = 1
+ST_PLAYING = 2
+ST_GAME_OVER = 3
+ST_CREDITS = 4
 
 # Inicializa a pygame
 pygame.init()
@@ -48,17 +54,35 @@ txt_score = Text("Changa-VariableFont_wght.ttf", "SCORE:", 30, Color("White")).s
 txt_ammov = Text("Changa-VariableFont_wght.ttf", "000", 30, Color("#EDD400")).set_bold(True)
 txt_scorev = Text("Changa-VariableFont_wght.ttf", "00000", 30, Color("#EDD400")).set_bold(True)
 
-pygame.time.set_timer(pygame.USEREVENT, 300)
-
 buffer = Surface((WIDTH, HEIGHT))
 
 lives = 3
 ammo = 50
 score = 0
+music: SoundBox
+state = ST_TITLE
 
 
-# TITLE STATE ----------------------------------------------------------------------------------
+def manage_states():
+    global state
+
+    while True:
+        if state == ST_TITLE:
+            state_title()
+
+        if state == ST_PLAYING:
+            state_playing()
+
+        if state == ST_CREDITS:
+            pass
+
+        if state == ST_GAME_OVER:
+            state_gameover()
+
+
 def state_title():
+    global music
+    global state
     running = True
 
     background = ImageSet()
@@ -69,26 +93,30 @@ def state_title():
     ze.add(os.path.join("Soldier-Guy", "_Mode-Gun", "03-Shot", "E_E_Gun__Attack_000.png"))
     ze.zoom(0.3)
 
+    music = SoundBox("SpringSpring_CC0_short theme melon no pwm.ogg").play_music()
+
+    pygame.time.set_timer(pygame.USEREVENT, 300, True)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                finish()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    state_playing()
+                    music.fadeout(1500)
+                    state = ST_PLAYING
+                    return
 
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    exit()
+                    finish()
 
             if event.type == pygame.USEREVENT:
                 txt_push.togle_visible()
-                pygame.time.set_timer(pygame.USEREVENT, 300)
+                pygame.time.set_timer(pygame.USEREVENT, 300, True)
 
         buffer.blit(background.get(0).get_image(), pygame.Rect(0, 0, 0, 0))
-        buffer.blit(ze.get(0).get_image(), pygame.Rect(450, 195, 0, 0))
+        buffer.blit(ze.get(0).get_image(), pygame.Rect(250, 220, 0, 0))
 
         txt_title.draw_xc(buffer, game.h // 2 - 195)
         txt_title2.draw_xc(buffer, game.h // 2 - 200)
@@ -100,14 +128,15 @@ def state_title():
         clock.tick(FPS)
 
 
-# GAME STATE----------------------------------------------------------------------------------
 def state_playing():
     global score
+    global state
+    global music
 
     stage = Group()
     running = True
 
-
+    music = SoundBox("public_domain_upbeatoverworld.wav").play_music()
     # -------------------PLAYER ANIMATIONS----------------------
     player_idle = ImageSet()
     for i in range(0, 9):
@@ -151,12 +180,16 @@ def state_playing():
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
+                running = False
+                music.unload()
                 pygame.quit()
                 exit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
+                    music.fadeout(1500)
+                    state = ST_TITLE
+                    return
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_s:
@@ -205,13 +238,22 @@ def draw_hud(surface: Surface):
     pass
 
 
-# GAME OVER STATE----------------------------------------------------------------------------------
 def state_gameover():
-    pass
+    global state
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                music.fadeout(1500)
+                state = ST_PLAYING
+                return
 
 
+def finish():
+    global music
+    music.unload()
+    pygame.quit()
+    exit()
 
 
-state_title()
-pygame.quit()
-exit()
+manage_states()
