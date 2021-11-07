@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import os
 from typing import Any
@@ -7,6 +9,7 @@ from xretro.retrogame import Game
 from xretro.retrosounds import SoundBox
 import glob
 from bullet import Bullet
+from shell import Shell
 
 
 class Player(Actor):
@@ -102,13 +105,24 @@ class Player(Actor):
             self.image_speed = 0.50
             self.shoting = True
             bullet = Bullet(self.game, 0, 0, self.get_y() + self.rect.height // 2 + 12)
+            shell = Shell(self.game, 0, 0, self.get_y() + self.rect.height // 2 + 12)
 
             if self.facing == Player.LEFT:
                 bullet.h_vel = -10
                 bullet.set_x(self.get_x() - 10)
+                shell.set_x(self.get_x() + 50)
+                shell.animations.get(shell.anim_index).rotate(90)
+                shell.h_vel = random.choice([3, 4, 5])
             else:
                 bullet.h_vel = 10
                 bullet.set_x(self.get_x() + 130)
+                shell.set_x(self.get_x() + 80)
+                shell.animations.get(shell.anim_index).rotate(-90)
+                shell.h_vel = -random.choice([3, 4, 5])
+
+            shell.ttl = 60
+            shell.v_vel = -8
+
             self.shoot.play()
 
         if self.rect.bottom >= self.ymax:

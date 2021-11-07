@@ -13,7 +13,7 @@ from pygame.surface import Surface
 class Actor(DirtySprite):
     DEFAULT = 99999999999999
 
-    def __init__(self, game: Game, layer: int,  x: int, y: int):
+    def __init__(self, game: Game, layer: int, x: int, y: int):
         super().__init__()
         game.add_actor(self, layer)
         self.game = game
@@ -31,7 +31,10 @@ class Actor(DirtySprite):
 
         self.grav_vel = 0  # forca gravitacional
         self.grav_acel = 0  # aceleracao gravitacional
-        self.grav_max = 6  # maxima da forca de gravidade
+        self.grav_max = 10  # maxima da forca de gravidade
+
+        self.angle = 0
+        self.angle_speed = 0
 
         self.fric = 0  # atrito posta as forcas horizontais e verticais
         self.h_vel = 0  # vel horizontal
@@ -42,6 +45,8 @@ class Actor(DirtySprite):
 
         self.xmax = Actor.DEFAULT
         self.xmin = Actor.DEFAULT
+
+        self.ttl = 0
 
         self.on_animation_end = None
         self.on_destroy = None
@@ -65,13 +70,23 @@ class Actor(DirtySprite):
             if not r.contains(self.rect):
                 self.on_outofscreen(self)
 
+        # Handles angles
+        # -----------------------------------------------------
+        if self.angle_speed != 0:
+            self.angle += self.angle_speed
+
         # Handles animations
         # -----------------------------------------------------
         if self.animations.count() > self.anim_index:
             imgs: ImageSet = self.animations.get(self.anim_index)
 
             if self.image_index < imgs.count():
-                self.image = imgs.get(math.floor(self.image_index)).get_image()
+                if self.angle_speed == 0:
+                    img_single = imgs.get(math.floor(self.image_index))
+                else:
+                    img_single = imgs.get(math.floor(self.image_index)).rotate(self.angle)
+
+                self.image = img_single.get_image()
                 self.visible = True
                 self.rect.w = self.image.get_rect().w
                 self.rect.h = self.image.get_rect().h
@@ -84,6 +99,8 @@ class Actor(DirtySprite):
                         self.image_index = 0
                     if self.image_index < 0:
                         self.image_index = imgs.count() - 1
+
+
 
         # Handles Max and Min constraints
         # -----------------------------------------------------
@@ -108,6 +125,13 @@ class Actor(DirtySprite):
             if self.rect.x < self.xmin:
                 self.rect.x = self.xmin
                 self.h_vel = 0
+
+        # Time to live
+        # ---------------------------------------------
+        if self.ttl > 0:
+            self.ttl -= 1
+            if self.ttl <= 0:
+                self.destroy()
 
     def set_x(self, x):
         self.rect.x = x

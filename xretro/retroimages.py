@@ -18,16 +18,19 @@ class ImageSingle(object):
     def scale(self, w: int, h: int):
         self.img = pygame.transform.scale(self.img, (w, h))
         self.img_copy = self.img.copy()
+        return self
 
     def scale_nice(self, w: int):
         self.img = pygame.transform.scale(self.img, (w, w * self.aspect))
         self.img_copy = self.img.copy()
+        return self
 
     def zoom(self, z: float):
         w = self.img.get_width()
         h = self.img.get_height()
         self.img = pygame.transform.scale(self.img, (w * z, h * z))
         self.img_copy = self.img.copy()
+        return self
 
     def flip(self, hflip, vflip):
         if self.hflip != hflip or self.vflip != vflip:
@@ -35,6 +38,11 @@ class ImageSingle(object):
             self.img = pygame.transform.flip(self.img, hflip, vflip)
             self.hflip = hflip
             self.vflip = vflip
+            return self
+
+    def rotate(self, angle):
+        self.img = pygame.transform.rotate(self.img_copy, angle)
+        return self
 
     def copy_from(self, surf: Surface):
         self.img = surf.copy()
@@ -64,6 +72,10 @@ class ImageSet(object):
     def zoom(self, z: float):
         for img in self.images:
             img.zoom(z)
+
+    def rotate(self, angle: float):
+        for img in self.images:
+            img.rotate(angle)
 
     def flip(self, hflip, vflip):
         for img in self.images:
