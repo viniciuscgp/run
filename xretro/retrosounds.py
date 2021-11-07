@@ -1,11 +1,11 @@
 import pygame.mixer
 import os
-from xretro import utility
+from xretro import retroutility
 
 
 class SoundBox(object):
     def __init__(self, file):
-        self.file = os.path.join(utility.sounds_folder(), file)
+        self.file = os.path.join(retroutility.sounds_folder(), file)
         self.volume: float = 1.0
         self.sound: pygame.mixer.Sound = None
         self.music = False
@@ -46,20 +46,21 @@ class SoundBox(object):
     def play(self):
         if self.sound is None:
             self.sound = pygame.mixer.Sound(self.file)
-            self.sound.play()
+        self.sound.play()
         return self
 
     def loop(self):
-        if not self.music:
-            if self.sound is None:
-                self.sound = pygame.mixer.Sound(self.file)
-            self.sound.play(loops=-1)
+        if self.sound is None:
+            self.sound = pygame.mixer.Sound(self.file)
+        self.sound.play(loops=-1)
         return self
 
-    def volume(self, v: float):
+    def set_volume(self, v: float):
         if self.music:
             pygame.mixer.music.set_volume(v)
         else:
+            if self.sound is None:
+                self.sound = pygame.mixer.Sound(self.file)
             self.sound.set_volume(v)
         return self
 
