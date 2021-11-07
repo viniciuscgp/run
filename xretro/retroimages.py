@@ -1,6 +1,6 @@
 import pygame
 import os
-from xretro import utility
+from xretro import retroutility
 from pygame import Surface
 
 
@@ -45,7 +45,7 @@ class ImageSet(object):
         self.images = []  # a list of ImageSingle objects
 
     def add(self, file):
-        img = pygame.image.load(os.path.join(utility.images_folder(), file))
+        img = pygame.image.load(os.path.join(retroutility.images_folder(), file))
         image_single = ImageSingle(img)
         self.images.append(image_single)
 

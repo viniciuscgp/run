@@ -1,11 +1,9 @@
 from typing import Any
 import math
 from pygame import Rect
-from pygame.sprite import Sprite
 from pygame.sprite import DirtySprite
-from pygame.sprite import Group
 
-from xretro.utility import consume
+from xretro.retroutility import consume
 from xretro.retroimages import AnimSet
 from xretro.retroimages import ImageSet
 from xretro.retrogame import Game
@@ -15,8 +13,9 @@ from pygame.surface import Surface
 class Actor(DirtySprite):
     DEFAULT = 99999999999999
 
-    def __init__(self, group: Group, game: Game, x: int, y: int):
-        super().__init__(group)
+    def __init__(self, game: Game, layer: int,  x: int, y: int):
+        super().__init__()
+        game.add_actor(self, layer)
         self.game = game
         self.visible = False
         self.image = Surface((2, 2))
@@ -28,7 +27,6 @@ class Actor(DirtySprite):
 
         self.anim_index = 0
 
-        self.grp = group
         self.rect = Rect(x, y, 0, 0)
 
         self.grav_vel = 0  # forca gravitacional

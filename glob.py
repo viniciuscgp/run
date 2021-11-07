@@ -14,5 +14,5 @@ ST_CREDITS = 4
 
 EV_SCORE = USEREVENT
 
-vol_music = 0.1
-vol_effects = 0.1
+vol_music = 0.4
+vol_effects = 0.6

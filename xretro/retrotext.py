@@ -5,12 +5,12 @@ from pygame import Rect
 from pygame import Surface
 from pygame import Color
 
-from xretro import utility
+from xretro import retroutility
 
 
 class Text:
     def __init__(self, fontname: str, text: str, size: int, color: Color) -> None:
-        self.file = os.path.join(utility.fonts_folder(), fontname)
+        self.file = os.path.join(retroutility.fonts_folder(), fontname)
         self.size = size
         self.color = color
         self.text = text
