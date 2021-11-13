@@ -1,6 +1,8 @@
 # Pastas importantes
 import os
 
+import xretro.retroconsts
+
 
 def get_root():
     filepath = os.path.dirname(__file__)
@@ -40,3 +42,15 @@ def consume(valor, fric):
         if valor < 0:
             valor = 0
     return valor * sinal
+
+
+def increment(v, inc, vmin, vmax):
+    old = v
+    v += inc
+    if vmin != xretro.retroconsts.DEFAULT:
+        if v < vmin:
+            return old
+    if vmax != xretro.retroconsts.DEFAULT:
+        if v > vmax:
+            return old
+    return v

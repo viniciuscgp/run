@@ -12,7 +12,12 @@ ST_PLAYING = 2
 ST_GAME_OVER = 3
 ST_CREDITS = 4
 
-EV_SCORE = USEREVENT
+EV_PUSH = USEREVENT
+EV_SCORE = EV_PUSH + 1
+EV_NEW_ENEMY = EV_SCORE + 1
 
-vol_music = 0.02
-vol_effects = 0.02
+LAYER_PLAYER = 0
+LAYER_INIM = 1
+
+vol_music = 0.06
+vol_effects = 0.04

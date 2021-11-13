@@ -7,28 +7,20 @@ from xretro.retroactor import Actor
 from xretro.retroimages import ImageSet
 from xretro.retrogame import Game
 from xretro.retrosounds import SoundBox
-import glob
 from bullet import Bullet
 from shell import Shell
+import glob
 
 
 class Player(Actor):
     RIGHT = 3
     LEFT = 7
 
-    def shot_finished(self: Actor):
-        if self.anim_index == 3:
-            self.shoting = False
-
-    def bullet_outofscreen(self: Actor):
-        self.kill()
-
     def __init__(self, game: Game, layer: int, x, y):
         super().__init__(game, layer, x, y)
         self.facing = Player.RIGHT
         self.onfloor = False
         self.shoting = False
-        self.on_animation_end = Player.shot_finished
 
         # PLAYER ANIMATIONS-----------------------------
         player_idle = ImageSet()
@@ -58,15 +50,15 @@ class Player(Actor):
         self.animations.add(player_shot)
 
         self.fric = 0.2
-        self.grav_vel = 2.8
+        self.grav_speed = 2.8
         self.grav_acel = 0.45
         self.ymax = 450
         self.xmin = 200
         self.xmax = game.w - 200
         self.image_speed = 0.15
 
-        self.shoot = SoundBox(os.path.join("q009", "shotgun.ogg")).set_volume(glob.vol_effects)
-        self.jump = SoundBox(os.path.join("public_domain_Jump2.wav")).set_volume(glob.vol_effects)
+        self.snd_shoot = SoundBox(os.path.join("q009", "shotgun.ogg")).set_volume(glob.vol_effects)
+        self.snd_jump = SoundBox(os.path.join("public_domain_Jump2.wav")).set_volume(glob.vol_effects)
 
     def update(self, *args: Any, **kwargs: Any):
 
@@ -81,7 +73,7 @@ class Player(Actor):
                 self.facing = Player.LEFT
                 if self.onfloor:
                     self.anim_index = 1
-            self.h_vel = -3
+            self.h_speed = -3
 
         if teclas[pygame.K_RIGHT] and not self.shoting:
             if self.facing != Player.RIGHT or self.anim_index != 1:
@@ -90,45 +82,45 @@ class Player(Actor):
                 self.facing = Player.RIGHT
                 if self.onfloor:
                     self.anim_index = 1
-            self.h_vel = 3
+            self.h_speed = 3
 
         if teclas[pygame.K_UP] and self.onfloor and not self.shoting:
-            self.grav_vel = -8
+            self.grav_speed = -8
             self.anim_index = 2
             self.image_index = 0
             self.onfloor = False
-            self.jump.play()
+            self.snd_jump.play()
 
         if teclas[pygame.K_SPACE] and not self.shoting:
             self.anim_index = 3
             self.image_index = 0
             self.image_speed = 0.50
             self.shoting = True
-            bullet = Bullet(self.game, 0, 0, self.get_y() + self.rect.height // 2 + 12)
-            shell = Shell(self.game, 0, 0, self.get_y() + self.rect.height // 2 + 12)
+            bullet = Bullet(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
+            shell = Shell(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
 
             if self.facing == Player.LEFT:
-                bullet.h_vel = -10
+                bullet.h_speed = -10
                 bullet.set_x(self.get_x() - 10)
                 shell.set_x(self.get_x() + 50)
                 shell.animations.get(shell.anim_index).rotate(90)
-                shell.h_vel = random.choice([3, 4, 5])
+                shell.h_speed = random.choice([3, 4, 5])
             else:
-                bullet.h_vel = 10
+                bullet.h_speed = 10
                 bullet.set_x(self.get_x() + 130)
                 shell.set_x(self.get_x() + 80)
                 shell.animations.get(shell.anim_index).rotate(-90)
-                shell.h_vel = -random.choice([3, 4, 5])
+                shell.h_speed = -random.choice([3, 4, 5])
 
             shell.ttl = 60
-            shell.v_vel = -8
+            shell.v_speed = -8
 
-            self.shoot.play()
+            self.snd_shoot.play()
 
         if self.rect.bottom >= self.ymax:
             self.onfloor = True
 
-        if self.h_vel == 0 and self.v_vel == 0 and self.onfloor and not self.shoting:
+        if self.h_speed == 0 and self.v_speed == 0 and self.onfloor and not self.shoting:
             self.anim_index = 0
             self.image_speed = 0.15
 
@@ -136,3 +128,7 @@ class Player(Actor):
             self.flip(False, False)
         else:
             self.flip(True, False)
+
+    def on_animation_end(self):
+        if self.anim_index == 3:
+            self.shoting = False

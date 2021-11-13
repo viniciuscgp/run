@@ -11,6 +11,7 @@ class ImageSingle(object):
         self.aspect = self.img.get_height() / self.img.get_width()
         self.hflip = False
         self.vflip = False
+        self.__zoom = 1
 
     def get_image(self):
         return self.img
@@ -30,7 +31,11 @@ class ImageSingle(object):
         h = self.img.get_height()
         self.img = pygame.transform.scale(self.img, (w * z, h * z))
         self.img_copy = self.img.copy()
+        self.__zoom = z
         return self
+
+    def get_zoom(self):
+        return self.__zoom
 
     def flip(self, hflip, vflip):
         if self.hflip != hflip or self.vflip != vflip:
@@ -38,7 +43,7 @@ class ImageSingle(object):
             self.img = pygame.transform.flip(self.img, hflip, vflip)
             self.hflip = hflip
             self.vflip = vflip
-            return self
+        return self
 
     def rotate(self, angle):
         self.img = pygame.transform.rotate(self.img_copy, angle)
@@ -46,6 +51,7 @@ class ImageSingle(object):
 
     def copy_from(self, surf: Surface):
         self.img = surf.copy()
+        return self
 
 
 class ImageSet(object):
@@ -56,30 +62,36 @@ class ImageSet(object):
         img = pygame.image.load(os.path.join(retroutility.images_folder(), file))
         image_single = ImageSingle(img)
         self.images.append(image_single)
+        return self
 
     def get(self, index: int) -> ImageSingle:
         return self.images[index]
 
     def remove(self, index: int):
         self.images.pop(index)
+        return self
 
     def count(self):
         return len(self.images)
 
     def copy_from(self, index: int, surf: Surface):
         self.images[index].copy_from(surf)
+        return self
 
     def zoom(self, z: float):
         for img in self.images:
             img.zoom(z)
+        return self
 
     def rotate(self, angle: float):
         for img in self.images:
             img.rotate(angle)
+        return self
 
     def flip(self, hflip, vflip):
         for img in self.images:
             img.flip(hflip, vflip)
+        return self
 
 
 class AnimSet(object):
@@ -88,12 +100,15 @@ class AnimSet(object):
 
     def add(self, imgset: ImageSet):
         self.sets.append(imgset)
+        return self
 
     def get(self, index: int) -> ImageSet:
         return self.sets[index]
 
     def remove(self, index: int):
         self.sets.pop(index)
+        return self
 
     def count(self):
         return len(self.sets)
+
