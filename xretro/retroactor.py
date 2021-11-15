@@ -19,7 +19,8 @@ class Actor(DirtySprite):
         self.layer = layer
         self.game = game
         self.parent = None
-        self.visible = False
+        self.visible = True
+        self.ghost = False
         self.image = Surface((2, 2))
         self.animations: AnimSet = AnimSet()
 
@@ -107,8 +108,6 @@ class Actor(DirtySprite):
                 self.rect.w = self.image.get_rect().w
                 self.rect.h = self.image.get_rect().h
                 self.rect_c = self.game.scale_rect(self.rect, self.collision_scale)
-
-                self.visible = True
 
                 if self.image_speed != 0:
                     self.image_index_prev = self.image_index

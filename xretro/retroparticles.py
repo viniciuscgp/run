@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 from pygame import Surface
+import pygame.gfxdraw
 from xretro.retroconsts import Ptype
 from xretro.retroutility import increment
 from xretro.retroconsts import DEFAULT
@@ -20,11 +21,13 @@ class Particle(object):
         pass
 
     def __draw_circle(self, surf: Surface):
-        pygame.draw.circle(surf, self.color, (self.x, self.y), self.size, 1)
+        pygame.gfxdraw.circle(surf, self.x, self.y, self.size, self.color)
+        # pygame.draw.circle(surf, self.color, (self.x, self.y), self.size, 1)
         pass
 
     def __draw_circle_fill(self, surf: Surface):
-        pygame.draw.circle(surf, self.color, (self.x, self.y), self.size, 0)
+        pygame.gfxdraw.filled_circle(surf, int(self.x), int(self.y), int(self.size), self.color)
+        #  pygame.draw.circle(surf, self.color, (self.x, self.y), self.size, 0)
         pass
 
     def __draw_image(self, surf: Surface):
@@ -225,6 +228,9 @@ class ParticleController(object):
     def add_bulk(self, particle: Particle, number):
         for i in range(1, number):
             self.add(particle)
+
+    def count(self):
+        return len(self.__particle_list)
 
     def kill(self, particle: Particle):
         self.on_die()

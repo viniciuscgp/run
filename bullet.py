@@ -18,6 +18,7 @@ class Bullet(Actor):
         bullet_set.zoom(0.3)
         bullet_set.get(0).get_image().set_colorkey(0)
         self.animations.add(bullet_set)
+        self.attack = 3
 
     def update(self, *args: Any, **kwargs: Any):
         super().update(*args, **kwargs)

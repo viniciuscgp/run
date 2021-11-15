@@ -19,4 +19,4 @@ class Shell(Actor):
         self.grav_acel = 2
         self.ymax = 450
         self.angle_speed = 15
-        self.life = 50
+        self.life = 80

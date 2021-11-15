@@ -26,15 +26,20 @@ class Game:
         self.__particle_control.update_all()
 
     def draw_all(self, surf: Surface):
-        for la in self.layers:
-            for actor in self.layers[la]:
-                surf.blit(actor.image, actor.rect)
+        for layer in self.layers:
+            for actor in self.layers[layer]:
+                if actor.visible:
+                    surf.blit(actor.image, actor.rect)
         self.__particle_control.draw_all(surf)
+
+    def reset(self):
+        self.layers = {}
 
     def draw_all_debug(self, surf: Surface):
         for la in self.layers:
             for actor in self.layers[la]:
-                surf.blit(actor.image, actor.rect)
+                if actor.visible:
+                    surf.blit(actor.image, actor.rect)
                 pygame.draw.rect(surf, (255, 255, 255), actor.rect, 3)
                 pygame.draw.rect(surf, (55, 255, 255), actor.rect_c, 3)
 
@@ -61,11 +66,13 @@ class Game:
     def is_colliding(self, actor, layer: int):
         collide_list = []
         try:
-            sprs = self.layers[layer]
+            actors = self.layers[layer]
         except KeyError:
             return []
 
-        for other in sprs:
+        for other in actors:
+            if actor.ghost or other.ghost:
+                continue
             if actor.rect_c.colliderect(other.rect_c):
                 collide_list.append(other)
 
@@ -79,7 +86,7 @@ class Game:
         actor1.defense -= actor2.attack
         actor2.defense -= actor1.attack
         if actor1.defense <= 0:
-            actor1.destroy()
+            actor1.kill()
         else:
             actor1.on_hit(actor2)
 

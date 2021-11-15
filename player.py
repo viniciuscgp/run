@@ -2,6 +2,7 @@ import random
 
 import pygame
 import os
+from pygame.event import Event
 from typing import Any
 from xretro.retroactor import Actor
 from xretro.retroimages import ImageSet
@@ -50,15 +51,21 @@ class Player(Actor):
         self.animations.add(player_shot)
 
         self.fric = 0.2
-        self.grav_speed = 2.8
-        self.grav_acel = 0.45
+        self.grav_speed = 2.0
+        self.grav_acel = 0.40
         self.ymax = 450
         self.xmin = 200
         self.xmax = game.w - 200
-        self.image_speed = 0.15
+        self.image_speed = 0.25
+        self.collision_scale = 0.6
 
         self.snd_shoot = SoundBox(os.path.join("q009", "shotgun.ogg")).set_volume(glob.vol_effects)
         self.snd_jump = SoundBox(os.path.join("public_domain_Jump2.wav")).set_volume(glob.vol_effects)
+        self.snd_noammo = SoundBox(os.path.join("q009", "outofammo.ogg")).set_volume(glob.vol_effects)
+
+        self.ghost = True
+        self.tag = 0
+        pygame.time.set_timer(glob.EV_PLAYER_FLASH, 300, True)
 
     def update(self, *args: Any, **kwargs: Any):
 
@@ -92,30 +99,32 @@ class Player(Actor):
             self.snd_jump.play()
 
         if teclas[pygame.K_SPACE] and not self.shoting:
-            self.anim_index = 3
-            self.image_index = 0
-            self.image_speed = 0.50
-            self.shoting = True
-            bullet = Bullet(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
-            shell = Shell(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
-
-            if self.facing == Player.LEFT:
-                bullet.h_speed = -10
-                bullet.set_x(self.get_x() - 10)
-                shell.set_x(self.get_x() + 50)
-                shell.animations.get(shell.anim_index).rotate(90)
-                shell.h_speed = random.choice([3, 4, 5])
+            if self.game.ammo <= 0:
+                self.snd_noammo.play()
             else:
-                bullet.h_speed = 10
-                bullet.set_x(self.get_x() + 130)
-                shell.set_x(self.get_x() + 80)
-                shell.animations.get(shell.anim_index).rotate(-90)
-                shell.h_speed = -random.choice([3, 4, 5])
+                self.anim_index = 3
+                self.image_index = 0
+                self.image_speed = 0.50
+                self.shoting = True
+                bullet = Bullet(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
+                shell = Shell(self.game, glob.LAYER_PLAYER, 0, self.get_y() + self.rect.height // 2 + 12)
 
-            shell.ttl = 60
-            shell.v_speed = -8
+                if self.facing == Player.LEFT:
+                    bullet.h_speed = -10
+                    bullet.set_x(self.get_x() - 10)
+                    shell.set_x(self.get_x() + 50)
+                    shell.animations.get(shell.anim_index).rotate(90)
+                    shell.h_speed = random.choice([3, 4, 5])
+                else:
+                    bullet.h_speed = 10
+                    bullet.set_x(self.get_x() + 130)
+                    shell.set_x(self.get_x() + 80)
+                    shell.animations.get(shell.anim_index).rotate(-90)
+                    shell.h_speed = -random.choice([3, 4, 5])
 
-            self.snd_shoot.play()
+                shell.v_speed = -12
+                self.game.ammo -= 1
+                self.snd_shoot.play()
 
         if self.rect.bottom >= self.ymax:
             self.onfloor = True
@@ -129,6 +138,19 @@ class Player(Actor):
         else:
             self.flip(True, False)
 
+        lscoll = self.game.is_colliding(self, glob.LAYER_INIM)
+        for ac in lscoll:
+            self.game.analise_atk(self, ac)
+
+        lscoll = self.game.is_colliding(self, glob.LAYER_DROPS)
+        for ac in lscoll:
+            self.game.analise_atk(self, ac)
+
+
     def on_animation_end(self):
         if self.anim_index == 3:
             self.shoting = False
+
+    def on_killed(self):
+        pygame.event.post(Event(glob.EV_PLAYER_DIE))
+
