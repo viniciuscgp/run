@@ -343,26 +343,32 @@ def draw_hud(surface: Surface):
     txt_debug.set_text(str.format("FPS: {0:03.2f}", clock.get_fps()))
     txt_debug.draw_xy(surface, 200, 30)
 
-    txt_debug.set_text(str.format("PT: {0:03.2f}", game.get_particles().count()))
+    txt_debug.set_text(str.format("PT: {0:05f}", game.get_particles().count()))
     txt_debug.draw_xy(surface, 400, 30)
 
-    txt_debug.set_text(str.format("ALC: {0:03.2f}", game.alc))
+    txt_debug.set_text(str.format("ALC: {0:05f}", game.alc))
     txt_debug.draw_xy(surface, 600, 30)
 
 
 def state_gameover():
     global state
-    # TITLE TEXTS ----------------------------------
-    txt_gameover = Text("Changa-VariableFont_wght.ttf", "GAME OVER", 90, Color(255, 10, 67)).set_bold(True)
+    global music
 
+    music = SoundBox(os.path.join("Music_by_Cleyton_Kauffman", "Farewell_mp3.mp3")).loop_music().set_volume(glob.vol_music)
+    txt_gameover = Text("Changa-VariableFont_wght.ttf", "GAME OVER", 90, Color(255, 10, 67)).set_bold(True)
     game.reset()
+    pygame.time.set_timer(glob.EV_GAME_OVER_RETURN, 10000, 1)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_SPACE:
                     music.fadeout(1500)
                     state = glob.ST_TITLE
                     return
+            if event.type == glob.EV_GAME_OVER_RETURN:
+                music.fadeout(1500)
+                state = glob.ST_TITLE
+                return
 
         screen.blit(bk.get(0).get_image(), rb1)
         screen.blit(bk.get(0).get_image(), rb2)
