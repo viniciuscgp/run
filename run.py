@@ -338,16 +338,16 @@ def draw_hud(surface: Surface):
     txt_scorev.draw_xy(surface, base + 800, game.h - 70)
 
     txt_debug.set_text(str.format("OBJ: {0:03.2f}", game.actor_count()))
-    txt_debug.draw_xy(surface, 30, 30)
+    # txt_debug.draw_xy(surface, 30, 30)
 
     txt_debug.set_text(str.format("FPS: {0:03.2f}", clock.get_fps()))
-    txt_debug.draw_xy(surface, 200, 30)
+    # txt_debug.draw_xy(surface, 200, 30)
 
     txt_debug.set_text(str.format("PT: {0:05f}", game.get_particles().count()))
-    txt_debug.draw_xy(surface, 400, 30)
+    # txt_debug.draw_xy(surface, 400, 30)
 
     txt_debug.set_text(str.format("ALC: {0:05f}", game.alc))
-    txt_debug.draw_xy(surface, 600, 30)
+    # txt_debug.draw_xy(surface, 600, 30)
 
 
 def state_gameover():
